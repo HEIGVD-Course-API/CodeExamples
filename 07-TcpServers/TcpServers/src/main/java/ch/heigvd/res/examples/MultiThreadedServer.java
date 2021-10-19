@@ -28,6 +28,7 @@ public class MultiThreadedServer {
 	 * @param port the port to listen on
 	 */
 	public MultiThreadedServer(int port) {
+
 		this.port = port;
 	}
 
@@ -63,7 +64,7 @@ public class MultiThreadedServer {
 			}
 
 			while (true) {
-				LOG.log(Level.INFO, "Waiting (blocking) for a new client on port {0}", port);
+				LOG.log(Level.INFO, "Multi-threaded: Waiting for a new client on port {0}", port);
 				try {
 					Socket clientSocket = serverSocket.accept();
 					LOG.info("A new client has arrived. Starting a new thread and delegating work to a new servant...");
@@ -72,7 +73,6 @@ public class MultiThreadedServer {
 					Logger.getLogger(MultiThreadedServer.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-
 		}
 
 	/**

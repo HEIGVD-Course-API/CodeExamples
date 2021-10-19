@@ -1,9 +1,6 @@
 package ch.heigvd.res.examples;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -41,7 +38,7 @@ public class SingleThreadedServer {
 		ServerSocket serverSocket;
 		Socket clientSocket = null;
 		BufferedReader in = null;
-		PrintWriter out = null;
+		BufferedWriter out = null;
 		
 		try {
 			serverSocket = new ServerSocket(port);
@@ -53,21 +50,20 @@ public class SingleThreadedServer {
 		while (true) {
 			try {
 				
-				LOG.log(Level.INFO, "Waiting (blocking) for a new client on port {0}", port);				
+				LOG.log(Level.INFO, "Single-threaded: Waiting for a new client on port {0}", port);
 				clientSocket = serverSocket.accept();
-				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				out = new PrintWriter(clientSocket.getOutputStream());
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+				out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
 				String line;
-				boolean shouldRun = true;
-				
-				out.println("Welcome to the Single-Threaded Server.\nSend me text lines and conclude with the BYE command.");
+
+				out.write("Welcome to the Single-Threaded Server.\nSend me text lines and conclude with the BYE command.\n");
 				out.flush();
 				LOG.info("Reading until client sends BYE or closes the connection...");				
-				while ( (shouldRun) && (line = in.readLine()) != null ) {
+				while ( (line = in.readLine()) != null ) {
 					if (line.equalsIgnoreCase("bye")) {
-						shouldRun = false;
+						break;
 					}
-					out.println("> " + line.toUpperCase());
+					out.write("> " + line.toUpperCase() + "\n");
 					out.flush();
 				}
 				
@@ -85,7 +81,11 @@ public class SingleThreadedServer {
 					}
 				}
 				if (out != null) {
-					out.close();
+					try {
+						out.close();
+					} catch (IOException ex1) {
+						LOG.log(Level.SEVERE, ex1.getMessage(), ex1);
+					}
 				}
 				if (clientSocket != null) {
 					try {
