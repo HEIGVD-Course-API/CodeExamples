@@ -2,6 +2,7 @@ package ch.heigvd.res.examples;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,11 +29,13 @@ public class DumbHttpClient {
 		
 		try {
 			clientSocket = new Socket("www.heig-vd.ch", 80);
-			out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(),
+									 StandardCharsets.UTF_8));
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(),
+					                StandardCharsets.UTF_8));
 
 			String malformedHttpRequest = "Hello, sorry, but I don't speak HTTP...\r\n\r\n";
-			out.write(malformedHttpRequest);
+			out.write(malformedHttpRequest); // Converts string to bytes using the encoding or default encoding!
 			out.flush();
 
 			LOG.log(Level.INFO, "*** Response sent by the server: ***");
