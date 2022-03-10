@@ -61,15 +61,17 @@ public class StreamingTimeServer {
 
         LOG.log(Level.INFO, "Starting my job... sending current time to the client for {0} ms", TEST_DURATION);
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-          writer.write(String.format("{'time' : '%s'}\n", new Date()));
+          writer.write(String.format("{'time' : '%s'}\n", new Date())); // \n to add end-of-line to text
           writer.flush();
           LOG.log(Level.INFO, "Sent data to client, doing a pause...");
           Thread.sleep(PAUSE_DURATION);
         }
+        // To keep the code simple, exception handling with try/catch/finally is omitted here.
         writer.close();
         reader.close();
         clientSocket.close();
       }
+      // serverSocket.close(); // Unreachable
   }
 
   /**
